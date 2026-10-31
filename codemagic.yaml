@@ -42,10 +42,10 @@ workflows:
           app.write_text(content)
           PY
 
-          mkdir -p "$HOME/.android"
+          mkdir -p /usr/local/share/android-sdk/.android
 
           keytool -genkeypair -v \
-            -keystore "$HOME/.android/debug.keystore" \
+            -keystore /usr/local/share/android-sdk/.android/debug.keystore \
             -storepass android \
             -alias AndroidDebugKey \
             -keypass android \
