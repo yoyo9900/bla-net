@@ -17,4 +17,4 @@ This is the first UI milestone for the BLA NET Android/iOS app:
 Phone sign-in is currently a UI prototype. Real SMS verification and live messaging
 are not connected yet. The next milestone is Firebase setup (Authentication,
 Cloud Firestore, and Storage), which requires creating a Firebase project and adding
-its platform configuration files. Never put private service credentials in source control.
+its platform configuration files. Never put private service credentials in source control.instance_type: linux_x2
