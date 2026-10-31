@@ -1,3 +1,4 @@
+
 workflows:
   android-workflow:
     name: BLA NET Android
@@ -21,20 +22,37 @@ workflows:
           python3 - <<'PY'
           from pathlib import Path
 
-          file = Path("android/app/build.gradle")
-          content = file.read_text()
+          settings = Path("android/settings.gradle")
+          content = settings.read_text()
+          plugin = '    id "com.google.gms.google-services" version "4.4.2" apply false'
 
-          plugin = '    id "com.google.gms.google-services" version "4.4.2"'
+          if "com.google.gms.google-services" not in content:
+              content = content.replace("plugins {", "plugins {\n" + plugin, 1)
 
+          settings.write_text(content)
+
+          app = Path("android/app/build.gradle")
+          content = app.read_text()
           if "com.google.gms.google-services" not in content:
               content = content.replace(
                   "plugins {",
-                  "plugins {\n" + plugin,
+                  'plugins {\n    id "com.google.gms.google-services"',
                   1
               )
-
-          file.write_text(content)
+          app.write_text(content)
           PY
+
+          mkdir -p "$HOME/.android"
+
+          keytool -genkeypair -v \
+            -keystore "$HOME/.android/debug.keystore" \
+            -storepass android \
+            -alias AndroidDebugKey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
 
           flutter pub get
 
