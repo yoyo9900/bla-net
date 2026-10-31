@@ -11,10 +11,12 @@ workflows:
     scripts:
       - name: Prepare Flutter project
         script: |
-          mkdir -p lib
-          cp main.dart lib/main.dart
+          set -e
 
           flutter create --platforms=android --org com.blanet --project-name app .
+
+          mkdir -p lib
+          cp main.dart lib/main.dart
 
           mkdir -p android/app
           cp google-services.json android/app/google-services.json
@@ -22,37 +24,45 @@ workflows:
           python3 - <<'PY'
           from pathlib import Path
 
-          settings = Path("android/settings.gradle")
+          settings = Path("android/settings.gradle.kts")
+          app = Path("android/app/build.gradle.kts")
+
+          if not settings.exists() or not app.exists():
+              raise SystemExit("Gradle Kotlin files were not found")
+
           content = settings.read_text()
-          plugin = '    id "com.google.gms.google-services" version "4.4.2" apply false'
+          plugin = '    id("com.google.gms.google-services") version "4.4.2" apply false'
 
           if "com.google.gms.google-services" not in content:
               content = content.replace("plugins {", "plugins {\n" + plugin, 1)
 
           settings.write_text(content)
 
-          app = Path("android/app/build.gradle")
           content = app.read_text()
+          plugin = '    id("com.google.gms.google-services")'
+
           if "com.google.gms.google-services" not in content:
-              content = content.replace(
-                  "plugins {",
-                  'plugins {\n    id "com.google.gms.google-services"',
-                  1
-              )
+              content = content.replace("plugins {", "plugins {\n" + plugin, 1)
+
           app.write_text(content)
           PY
 
+          mkdir -p "$HOME/.android"
           mkdir -p /usr/local/share/android-sdk/.android
 
-          keytool -genkeypair -v \
-            -keystore /usr/local/share/android-sdk/.android/debug.keystore \
-            -storepass android \
-            -alias AndroidDebugKey \
-            -keypass android \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
+          if [ ! -f /usr/local/share/android-sdk/.android/debug.keystore ]; then
+            keytool -genkeypair -v \
+              -keystore /usr/local/share/android-sdk/.android/debug.keystore \
+              -storepass android \
+              -alias AndroidDebugKey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+          cp /usr/local/share/android-sdk/.android/debug.keystore "$HOME/.android/debug.keystore"
 
           flutter pub get
 
