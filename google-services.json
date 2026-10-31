@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "120070248671",
+    "project_id": "bla-net",
+    "storage_bucket": "bla-net.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120070248671:android:1b0ad23a5c677dd01af16a",
+        "android_client_info": {
+          "package_name": "com.blanet.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZLGm_-UCHdNpJylG7sKM9gJkLVQDWj18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
